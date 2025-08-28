@@ -1,0 +1,1 @@
+declaro module "*.png"
