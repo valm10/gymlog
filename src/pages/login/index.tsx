@@ -6,6 +6,6 @@ import {
 
 export default function Login (){
     return (
-        <Text>Hello World</Text>
+        <Text>Gym Log</Text>
     )
 }
