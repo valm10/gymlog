@@ -8,8 +8,9 @@ import {
 } from 'react-native';
 
 import { style } from "./style";
-
+import Icon from 'react-native-vector-icons/Entypo';
 import Logo from '../../assets/logo.png'
+import { themas } from "../../global/themes";
 
 export default function Login (){
     return (
@@ -24,10 +25,16 @@ export default function Login (){
             </View>
 
             <View style={style.boxMid}>
-            <Text>Email Address</Text>
+            <Text style={style.titleInput}>EMAIL ADDRESS</Text>
+            <View style={style.boxInput}>
+            <TextInput style={style.input} />
+            <Icon name="email" size={20} color={themas.colors.gray} />
+            </View>
+            <Text style={style.titleInput}>PASSWORD</Text>
+            <View style={style.boxInput}>
             <TextInput />
-            <Text>Password</Text>
-            <TextInput />
+            <Text>...</Text>
+            </View>
             </View>
 
             <View style={style.boxBottom}>
