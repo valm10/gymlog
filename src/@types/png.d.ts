@@ -1,1 +1,2 @@
-declaro module "*.png"
+declare module "*.png"
+declare module 'react-native-vector-icons/MaterialIcons'
