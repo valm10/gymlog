@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 
 import { style } from "./style";
-import Icon from 'react-native-vector-icons/Entypo';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import Logo from '../../assets/logo.png'
 import { themas } from "../../global/themes";
 
@@ -21,7 +21,7 @@ export default function Login (){
                 style={style.logo}
                 resizeMode="contain"
                 />
-                <Text style={style.text}>Welcome Back</Text>
+                <Text style={style.text}>Welcome Back!</Text>
             </View>
 
             <View style={style.boxMid}>
@@ -32,8 +32,8 @@ export default function Login (){
             </View>
             <Text style={style.titleInput}>PASSWORD</Text>
             <View style={style.boxInput}>
-            <TextInput />
-            <Text>...</Text>
+            <TextInput style={style.input}/>
+            <Icon name="password" size={20} color={themas.colors.gray} />
             </View>
             </View>
 
