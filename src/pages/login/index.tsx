@@ -16,6 +16,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import Logo from '../../assets/logo.png'
 import { themas } from "../../global/themes";
 import { Input } from '../../components/Input';
+import { Button } from '../../components/Button';
 
 export default function Login (){
     const [email,setEmail] = useState('');
@@ -52,7 +53,7 @@ export default function Login (){
             <View style={style.boxMid}>
                 
             <Input  
-                value='email'
+                value={email}
                 onChangeText={setEmail}
                 title='EMAIL ADDRESS'
                 IconRigth={MaterialIcons}
@@ -60,7 +61,7 @@ export default function Login (){
 
             />
             <Input  
-                value='(password)'
+                value={password}
                 onChangeText={setPassword}
                 title='PASSWORD'
                 IconRigth={AntDesign}
@@ -73,14 +74,10 @@ export default function Login (){
             </View>
 
             <View style={style.boxBottom}>
-                <TouchableOpacity style={style.button} onPress={()=>getLogin()}>
-                    {
-                    loading?
-                    <ActivityIndicator color={'#FFFF'} size={"small"}/>
-                    :
-                    <Text style={style.textButton}>Log In</Text>
-                    }
-                </TouchableOpacity>
+                <Button 
+                text='Log in'
+                loading={loading} onPress={()=>getLogin()}
+                />
             </View>
             <Text style={style.textBottom}>Don’t have an account? <Text style={style.textBottomCreate}>Sign up here</Text></Text>
         </View>
