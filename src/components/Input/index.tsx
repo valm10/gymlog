@@ -35,7 +35,7 @@ export const Input = forwardRef ((Props:Props,ref: LegacyRef<TextInput> | null)=
 
     const calculateSizePaddingLeft = () =>{
         if(IconLeft && IconRigth){
-            return 10;
+            return 0;
         } else if (IconLeft || IconRigth ){
             return 10;
         } else {
@@ -45,7 +45,7 @@ export const Input = forwardRef ((Props:Props,ref: LegacyRef<TextInput> | null)=
 
     return (
         <>
-        <Text style={styles.titleInput}>{title}</Text>
+        {title&&<Text style={styles.titleInput}>{title}</Text>}
             <View style={[styles.boxInput,{paddingLeft:calculateSizePaddingLeft()}]}>
                 {IconLeft && iconLeftName && (
                 <TouchableOpacity onPress={onIconLeftPress} style={styles.Button}>
