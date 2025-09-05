@@ -11,34 +11,31 @@ import {
 } from 'react-native';
 
 import { style } from "./style";
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import Logo from '../../assets/logo.png'
 import { themas } from "../../global/themes";
+import { Input } from '../../components/Input';
 
 export default function Login (){
     const [email,setEmail] = useState('');
     const [password,setPassword] = useState('');
+    const [showPassword,setShowPassword] = useState(true);
     const [loading, setLoading] = useState(false);
 
     function getLogin(){
+        setLoading(true)
         try {
-            setLoading(true)
             if(!email || !password){
                 return Alert.alert('Missing info', 'Please enter email and password.')
             }
-
-            setTimeout(()=>{
-                if(email == 'vitor@gmail.com' && password == '123'){
-                    Alert.alert('Success')
-                } else {
-                    Alert.alert('User not found')
-                }
-                setLoading(false)
-            },3000)
+            
+            console.log('Logged in');
 
         } catch (error) {
             console.log(error)
         }
+        setLoading(false)
     }
 
     return (
@@ -54,23 +51,24 @@ export default function Login (){
 
             <View style={style.boxMid}>
                 
-            <Text style={style.titleInput}>EMAIL ADDRESS</Text>
-            <View style={style.boxInput}>
-            <TextInput 
-            style={style.input}
-            value={email}
-            onChangeText={setEmail} />
-            <Icon name="email" size={20} color={themas.colors.gray} />
-            </View>
+            <Input  
+                value='email'
+                onChangeText={setEmail}
+                title='EMAIL ADDRESS'
+                IconRigth={MaterialIcons}
+                iconRigthName='email'
 
-            <Text style={style.titleInput}>PASSWORD</Text>
-            <View style={style.boxInput}>
-            <TextInput 
-            style={style.input}
-            value={password}
-            onChangeText={setPassword} />
-            <Icon name="password" size={20} color={themas.colors.gray} />
-            </View>
+            />
+            <Input  
+                value='(password)'
+                onChangeText={setPassword}
+                title='PASSWORD'
+                IconRigth={AntDesign}
+                iconRigthName={showPassword?"eye-invisible":"eye"}
+                secureTextEntry={showPassword}
+                onIconRigthPress={()=> setShowPassword(!showPassword)}
+
+            />
 
             </View>
 
@@ -88,3 +86,4 @@ export default function Login (){
         </View>
     )
 }
+                
