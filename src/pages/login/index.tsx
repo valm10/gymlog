@@ -7,7 +7,7 @@ import {
     TextInput,
     TouchableOpacity,
     Alert,
-    ActivityIndicator
+    ActivityIndicator,
 } from 'react-native';
 
 import { style } from "./style";
@@ -27,14 +27,14 @@ export default function Login (){
                 return Alert.alert('Missing info', 'Please enter email and password.')
             }
 
-            setTimeout{()=>{
+            setTimeout(()=>{
                 if(email == 'vitor@gmail.com' && password == '123'){
                     Alert.alert('Success')
                 } else {
                     Alert.alert('User not found')
                 }
                 setLoading(false)
-            },3000}
+            },3000)
 
         } catch (error) {
             console.log(error)
