@@ -1,12 +1,19 @@
 import { createStackNavigator } from "@react-navigation/stack";
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
-import Login from "./src/pages/login";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { StyleSheet } from "react-native";
+import Routes from "./src/routes/index.routes";
+import { NavigationContainer } from "@react-navigation/native";
 
 export default function App() {
-  return <Login />;
+  return (
+    <NavigationContainer>
+      <Routes />;
+    </NavigationContainer>
+  );
 }
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    flex: 1,
+  },
 });
