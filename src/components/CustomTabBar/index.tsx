@@ -7,13 +7,26 @@ import {
   Ionicons,
   MaterialIcons,
 } from "@expo/vector-icons";
+import { themas } from "../../global/themes";
 
 export default ({ state, navigation }) => {
+  const go = (screenName: string) => {
+    navigation.navigate(screenName);
+  };
+
   return (
     <View style={styles.tabArea}>
-      <TouchableOpacity style={styles.tabItem}>
-        <Fontisto name="player-settings" style={{ fontSize: 32 }} />
+      <TouchableOpacity style={styles.tabItem} onPress={() => go("Settings")}>
+        <Fontisto
+          name="player-settings"
+          style={{
+            opacity: state.index === 0 ? 1 : 0.3,
+            color: themas.colors.primary,
+            fontSize: 32,
+          }}
+        />
       </TouchableOpacity>
+      //It looks like a mess but trust it works
       <TouchableOpacity style={styles.tabItemButtom}>
         <View style={{ width: "100%", left: 10, top: 4 }}>
           <Ionicons name="add" size={35} color={"#FFF"} />
@@ -29,8 +42,15 @@ export default ({ state, navigation }) => {
           <MaterialIcons name="edit-note" size={30} style={{ color: "#FFF" }} />
         </View>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.tabItem}>
-        <FontAwesome name="user" style={{ fontSize: 32 }} />
+      <TouchableOpacity style={styles.tabItem} onPress={() => go("User")}>
+        <FontAwesome
+          name="user"
+          style={{
+            opacity: state.index === 1 ? 1 : 0.3,
+            color: themas.colors.primary,
+            fontSize: 32,
+          }}
+        />
       </TouchableOpacity>
     </View>
   );
