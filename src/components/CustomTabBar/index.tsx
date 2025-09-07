@@ -1,5 +1,5 @@
-import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import React, { useContext } from "react";
+import { TouchableOpacity, View } from "react-native";
 import { styles } from "./style";
 import {
   Fontisto,
@@ -8,8 +8,10 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import { themas } from "../../global/themes";
+import { AuthContextList } from "../../context/authContext_list";
 
 export default ({ state, navigation }) => {
+  const { onOpen } = useContext(AuthContextList) as { onOpen: () => void };
   const go = (screenName: string) => {
     navigation.navigate(screenName);
   };
@@ -27,7 +29,7 @@ export default ({ state, navigation }) => {
         />
       </TouchableOpacity>
       //It looks like a mess but trust it works
-      <TouchableOpacity style={styles.tabItemButtom}>
+      <TouchableOpacity style={styles.tabItemButtom} onPress={onOpen}>
         <View style={{ width: "100%", left: 10, top: 4 }}>
           <Ionicons name="add" size={35} color={"#FFF"} />
         </View>
