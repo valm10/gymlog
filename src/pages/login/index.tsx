@@ -18,6 +18,7 @@ import { themas } from "../../global/themes";
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
+import BottomRoutes from "../../routes/bottom.routes";
 
 export default function Login() {
   const navigation = useNavigation<NavigationProp<any>>();
@@ -33,7 +34,7 @@ export default function Login() {
         return Alert.alert("Missing info", "Please enter email and password.");
       }
 
-      navigation.navigate("BottomRoutes");
+      navigation.reset({ routes: [{ name: "BottomRoutes" }] });
 
       console.log("Logged in");
     } catch (error) {
