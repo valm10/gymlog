@@ -17,8 +17,10 @@ import Logo from "../../assets/logo.png";
 import { themas } from "../../global/themes";
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
+import { useNavigation, NavigationProp } from "@react-navigation/native";
 
 export default function Login() {
+  const navigation = useNavigation<NavigationProp<any>>();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(true);
@@ -31,11 +33,14 @@ export default function Login() {
         return Alert.alert("Missing info", "Please enter email and password.");
       }
 
+      navigation.navigate("BottomRoutes");
+
       console.log("Logged in");
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   return (
