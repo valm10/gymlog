@@ -9,16 +9,16 @@ import {
 } from "@expo/vector-icons";
 import { themas } from "../../global/themes";
 import { AuthContextList } from "../../context/authContext_list";
+import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 
-export default ({ state, navigation }) => {
+export default function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const { onOpen } = useContext(AuthContextList) as { onOpen: () => void };
-  const go = (screenName: string) => {
-    navigation.navigate(screenName);
-  };
+
+  const go = (screenName: string) => navigation.navigate(screenName as never);
 
   return (
     <View style={styles.tabArea}>
-      <TouchableOpacity style={styles.tabItem} onPress={() => go("Settings")}>
+      <TouchableOpacity style={styles.tabItem} onPress={() => go("Home")}>
         <Fontisto
           name="player-settings"
           style={{
@@ -28,10 +28,10 @@ export default ({ state, navigation }) => {
           }}
         />
       </TouchableOpacity>
-      //It looks like a mess but trust it works
+
       <TouchableOpacity style={styles.tabItemButtom} onPress={onOpen}>
         <View style={{ width: "100%", left: 10, top: 4 }}>
-          <Ionicons name="add" size={35} color={"#FFF"} />
+          <Ionicons name="add" size={35} color="#FFF" />
         </View>
         <View
           style={{
@@ -41,10 +41,11 @@ export default ({ state, navigation }) => {
             bottom: 10,
           }}
         >
-          <MaterialIcons name="edit-note" size={30} style={{ color: "#FFF" }} />
+          <MaterialIcons name="edit-note" size={30} color="#FFF" />
         </View>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.tabItem} onPress={() => go("User")}>
+
+      <TouchableOpacity style={styles.tabItem} onPress={() => go("Settings")}>
         <FontAwesome
           name="user"
           style={{
@@ -56,4 +57,4 @@ export default ({ state, navigation }) => {
       </TouchableOpacity>
     </View>
   );
-};
+}
