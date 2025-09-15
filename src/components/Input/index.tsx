@@ -6,7 +6,7 @@ import {
   TextInputProps,
   TouchableOpacity,
 } from "react-native";
-import { styles } from "../style";
+import { styles } from "./style";
 import { themas } from "../../global/themes";
 import { MaterialIcons, FontAwesome, AntDesign } from "@expo/vector-icons";
 
