@@ -19,26 +19,33 @@ import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import BottomRoutes from "../../routes/bottom.routes";
+import { supabase } from '../../lib/supabase';
+import type { StackNavigationProp } from '@react-navigation/stack';
+import type { RootStackParamList } from '../../routes/types';
 
 export default function Login() {
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>(); {
   const navigation = useNavigation<NavigationProp<any>>();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  function getLogin() {
-    setLoading(true);
+  async function getLogin() {
     try {
+      setLoading(true);
       if (!email || !password) {
-        return Alert.alert("Missing info", "Please enter email and password.");
+        Alert.alert('Missing info', 'Please enter email and password.');
+        return;
       }
-
-      navigation.reset({ routes: [{ name: "BottomRoutes" }] });
-
-      console.log("Logged in");
-    } catch (error) {
-      console.log(error);
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        Alert.alert('Login failed', error.message);
+        return;
+      }
+      navigation.reset({ routes: [{ name: 'BottomRoutes' }] });
+    } catch (e) {
+      Alert.alert('Error', 'Unexpected error, try again.');
     } finally {
       setLoading(false);
     }
