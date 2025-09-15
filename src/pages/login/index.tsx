@@ -1,31 +1,17 @@
 import React, { useState } from "react";
-
-import {
-  Text,
-  View,
-  Image,
-  TextInput,
-  TouchableOpacity,
-  Alert,
-  ActivityIndicator,
-} from "react-native";
-
-import { style } from "./style";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import AntDesign from "react-native-vector-icons/AntDesign";
+import { Text, View, Image, Alert, TouchableOpacity } from "react-native";
+import { MaterialIcons, AntDesign } from "@expo/vector-icons";
 import Logo from "../../assets/logo.png";
-import { themas } from "../../global/themes";
+import { style } from "./style";
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
-import { useNavigation, NavigationProp } from "@react-navigation/native";
-import BottomRoutes from "../../routes/bottom.routes";
-import { supabase } from '../../lib/supabase';
-import type { StackNavigationProp } from '@react-navigation/stack';
-import type { RootStackParamList } from '../../routes/types';
+import { useNavigation } from "@react-navigation/native";
+import type { StackNavigationProp } from "@react-navigation/stack";
+import type { RootStackParamList } from "../../routes/types";
+import { supabase } from "../../lib/supabase";
 
 export default function Login() {
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>(); {
-  const navigation = useNavigation<NavigationProp<any>>();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(true);
@@ -35,17 +21,20 @@ export default function Login() {
     try {
       setLoading(true);
       if (!email || !password) {
-        Alert.alert('Missing info', 'Please enter email and password.');
+        Alert.alert("Missing info", "Please enter email and password.");
         return;
       }
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
       if (error) {
-        Alert.alert('Login failed', error.message);
+        Alert.alert("Login failed", error.message);
         return;
       }
-      navigation.reset({ routes: [{ name: 'BottomRoutes' }] });
-    } catch (e) {
-      Alert.alert('Error', 'Unexpected error, try again.');
+      navigation.reset({ routes: [{ name: "BottomRoutes" }] });
+    } catch {
+      Alert.alert("Error", "Unexpected error, try again.");
     } finally {
       setLoading(false);
     }
@@ -65,6 +54,8 @@ export default function Login() {
           title="EMAIL ADDRESS"
           IconRigth={MaterialIcons}
           iconRigthName="email"
+          keyboardType="email-address"
+          autoCapitalize="none"
         />
         <Input
           value={password}
@@ -78,12 +69,16 @@ export default function Login() {
       </View>
 
       <View style={style.boxBottom}>
-        <Button text="Log in" loading={loading} onPress={() => getLogin()} />
+        <Button text="Log in" loading={loading} onPress={getLogin} />
       </View>
-      <Text style={style.textBottom}>
-        Don’t have an account?{" "}
-        <Text style={style.textBottomCreate}>Sign up here</Text>
-      </Text>
+      <View style={{ flexDirection: "row" }}>
+        <Text style={style.textBottom}>Don’t have an account? </Text>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("SignUp" as never)}
+        >
+          <Text style={style.textBottomCreate}>Sign up here</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }

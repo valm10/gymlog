@@ -1,6 +1,6 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Home from "../pages/home/index.tsx";
+import Home from "../pages/home";
 import Settings from "../pages/settings";
 import CustomTabBar from "../components/CustomTabBar";
 import { AuthProviderList } from "../context/authContext_list";

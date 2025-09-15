@@ -1,31 +1,32 @@
 import React from "react";
-import { View, Text, Alert } from "react-native";
+import { View, Alert, StyleSheet } from "react-native";
 import { Calendar } from "react-native-calendars";
-import dayjs from "dayjs";
-import BottomTimer from "../../components/BottomTimer";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Home() {
-  const today = dayjs().format("YYYY-MM-DD");
+  const navigation = useNavigation();
+  const today = new Date().toISOString().split("T")[0];
 
   const onDayPress = (d: { dateString: string }) => {
     if (d.dateString === today) {
-      Alert.alert("Log do dia", "Abrir tela de log do treino de hoje");
+      navigation.navigate("LogToday" as never);
     } else {
       Alert.alert("Dia passado", "Você pode visualizar o histórico desse dia.");
     }
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
       <Calendar
-        markedDates={{ [today]: { selected: true } }}
+        markedDates={{
+          [today]: { selected: true, selectedColor: "orange" },
+        }}
         onDayPress={onDayPress}
       />
-      <View style={{ flex: 1, padding: 16 }}>
-        <Text style={{ fontSize: 18, fontWeight: "600" }}>Hoje: {today}</Text>
-        {/* database connection */}
-      </View>
-      <BottomTimer />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: "#fff" },
+});

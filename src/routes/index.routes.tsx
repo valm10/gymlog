@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import Login from "../pages/login";
+import SignUp from "../pages/signup";
 import BottomRoutes from "./bottom.routes";
-import type { RootStackParamList } from "./types";
+import LogToday from "../pages/log";
 import { supabase } from "../lib/supabase";
+import type { RootStackParamList } from "./types";
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -21,9 +23,15 @@ export default function Routes() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {session ? (
-        <Stack.Screen name="BottomRoutes" component={BottomRoutes} />
+        <>
+          <Stack.Screen name="BottomRoutes" component={BottomRoutes} />
+          <Stack.Screen name="LogToday" component={LogToday} />
+        </>
       ) : (
-        <Stack.Screen name="Login" component={Login} />
+        <>
+          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="SignUp" component={SignUp} />
+        </>
       )}
     </Stack.Navigator>
   );
