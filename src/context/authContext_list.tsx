@@ -1,15 +1,18 @@
 import React, { createContext, useContext } from "react";
 import { Alert } from "react-native";
 
-export const AuthContextList: any = createContext({});
+export const AuthContextList = createContext<{ onOpen: () => void }>({
+  onOpen: () => {},
+});
 
-export const AuthProviderList = (props: any): any => {
-  const onOpen = () => {
-    Alert.alert("Log Open");
-  };
+export const AuthProviderList: React.FC<React.PropsWithChildren> = ({
+  children,
+}) => {
+  const onOpen = () =>
+    Alert.alert("Log", "Abrir fluxo de novo treino (placeholder)");
   return (
     <AuthContextList.Provider value={{ onOpen }}>
-      {props.children}
+      {children}
     </AuthContextList.Provider>
   );
 };

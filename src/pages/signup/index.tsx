@@ -29,7 +29,6 @@ export default function SignUp() {
     if (password !== confirmPassword) {
       return Alert.alert("Error", "Passwords do not match.");
     }
-
     try {
       setLoading(true);
       const { error } = await supabase.auth.signUp({ email, password });
@@ -85,8 +84,7 @@ export default function SignUp() {
           />
         </View>
 
-        {/* Botão fixado no fundo */}
-        <View style={{ padding: 20 }}>
+        <View style={{ padding: 20, width: "100%" }}>
           <Button text="Sign up" loading={loading} onPress={handleSignUp} />
         </View>
       </View>

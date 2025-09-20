@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { styles } from "./style";
-import { themas } from "../../global/themes";
+import theme from "../../global/themes";
 import { MaterialIcons, FontAwesome, AntDesign } from "@expo/vector-icons";
 
 type IconComponent =
@@ -26,7 +26,7 @@ type Props = TextInputProps & {
 };
 
 export const Input = forwardRef(
-  (Props: Props, ref: LegacyRef<TextInput> | null) => {
+  (props: Props, ref: LegacyRef<TextInput> | null) => {
     const {
       IconLeft,
       IconRigth,
@@ -36,54 +36,36 @@ export const Input = forwardRef(
       onIconLeftPress,
       onIconRigthPress,
       ...rest
-    } = Props;
+    } = props;
 
-    const calculateSizeWidth = () => {
-      if (IconLeft && IconRigth) {
-        return "80%";
-      } else if (IconLeft || IconRigth) {
-        return "90%";
-      } else {
-        return "100%";
-      }
-    };
-
-    const calculateSizePaddingLeft = () => {
-      if (IconLeft && IconRigth) {
-        return 0;
-      } else if (IconLeft || IconRigth) {
-        return 10;
-      } else {
-        return 20;
-      }
-    };
+    const width =
+      IconLeft && IconRigth ? "80%" : IconLeft || IconRigth ? "90%" : "100%";
+    const paddingLeft =
+      IconLeft && IconRigth ? 0 : IconLeft || IconRigth ? 10 : 20;
 
     return (
       <>
         {title && <Text style={styles.titleInput}>{title}</Text>}
-        <View
-          style={[styles.boxInput, { paddingLeft: calculateSizePaddingLeft() }]}
-        >
+        <View style={[styles.boxInput, { paddingLeft }]}>
           {IconLeft && iconLeftName && (
             <TouchableOpacity onPress={onIconLeftPress} style={styles.Button}>
               <IconLeft
-                name={iconLeftName as any}
+                // @ts-ignore RN icon types
+                name={iconLeftName}
                 size={20}
-                color={themas.colors.gray}
+                color={theme.colors.gray}
                 style={styles.Icon}
               />
             </TouchableOpacity>
           )}
-          <TextInput
-            style={[styles.input, { width: calculateSizeWidth() }]}
-            {...rest}
-          />
+          <TextInput ref={ref} style={[styles.input, { width }]} {...rest} />
           {IconRigth && iconRigthName && (
             <TouchableOpacity onPress={onIconRigthPress} style={styles.Button}>
               <IconRigth
-                name={iconRigthName as any}
+                // @ts-ignore RN icon types
+                name={iconRigthName}
                 size={20}
-                color={themas.colors.gray}
+                color={theme.colors.gray}
                 style={styles.Icon}
               />
             </TouchableOpacity>

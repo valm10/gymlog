@@ -7,7 +7,7 @@ export async function ensureProfile() {
   if (!user) throw new Error("not authenticated");
   await supabase
     .from("profiles")
-    .insert({ id: user.id })
+    .upsert({ id: user.id })
     .select()
     .maybeSingle();
   return user;
@@ -37,6 +37,8 @@ export async function startWorkout(notes?: string) {
 }
 
 export async function getTodayWorkout() {
+  const start = new Date(new Date().setHours(0, 0, 0, 0)).toISOString();
+  const end = new Date(new Date().setHours(23, 59, 59, 999)).toISOString();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -44,11 +46,8 @@ export async function getTodayWorkout() {
   const { data, error } = await supabase
     .from("workouts")
     .select("*")
-    .gte("started_at", new Date(new Date().setHours(0, 0, 0, 0)).toISOString())
-    .lte(
-      "started_at",
-      new Date(new Date().setHours(23, 59, 59, 999)).toISOString()
-    )
+    .gte("started_at", start)
+    .lte("started_at", end)
     .eq("user_id", user.id)
     .order("started_at", { ascending: false })
     .limit(1);

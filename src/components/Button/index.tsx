@@ -1,25 +1,51 @@
 import React from "react";
 import {
-  TouchableHighlightProps,
-  TouchableOpacity,
   ActivityIndicator,
+  Pressable,
   Text,
+  ViewStyle,
+  TextStyle,
 } from "react-native";
-import { styles } from "./style";
 
-type Props = TouchableHighlightProps & {
+type Props = {
   text: string;
+  onPress: () => void;
   loading?: boolean;
+  style?: ViewStyle;
+  textStyle?: TextStyle;
+  disabled?: boolean;
 };
 
-export function Button({ ...rest }: Props) {
+export function Button({
+  text,
+  onPress,
+  loading,
+  style,
+  textStyle,
+  disabled,
+}: Props) {
   return (
-    <TouchableOpacity style={styles.button} {...rest} activeOpacity={0.6}>
-      {rest.loading ? (
-        <ActivityIndicator />
+    <Pressable
+      onPress={onPress}
+      disabled={disabled || loading}
+      style={[
+        {
+          height: 48,
+          borderRadius: 12,
+          backgroundColor: "#000",
+          alignItems: "center",
+          justifyContent: "center",
+        },
+        style,
+      ]}
+    >
+      {loading ? (
+        <ActivityIndicator color="#fff" />
       ) : (
-        <Text style={styles.textButton}>{rest.text}</Text>
+        <Text style={[{ color: "#fff", fontWeight: "700" }, textStyle]}>
+          {text}
+        </Text>
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
 }

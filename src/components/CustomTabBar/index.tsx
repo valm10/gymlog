@@ -1,59 +1,99 @@
-import React, { useContext } from "react";
-import { TouchableOpacity, View } from "react-native";
-import { styles } from "./style";
+import React, { useState } from "react";
 import {
-  Fontisto,
-  FontAwesome,
+  ActivityIndicator,
+  TouchableOpacity,
+  View,
+  Text,
+  Platform,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
+import {
   Ionicons,
   MaterialIcons,
+  FontAwesome5,
+  Feather,
 } from "@expo/vector-icons";
-import { themas } from "../../global/themes";
-import { AuthContextList } from "../../context/authContext_list";
-import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
+import { styles } from "./style";
+import theme from "../../global/themes";
+import { startWorkout } from "../../services/db";
 
 export default function CustomTabBar({ state, navigation }: BottomTabBarProps) {
-  const { onOpen } = useContext(AuthContextList) as { onOpen: () => void };
+  const insets = useSafeAreaInsets();
+  const [creating, setCreating] = useState(false);
 
-  const go = (screenName: string) => navigation.navigate(screenName as never);
+  const onPressTab = (routeName: string) =>
+    navigation.navigate(routeName as never);
+
+  const onStartWorkout = async () => {
+    if (creating) return;
+    try {
+      setCreating(true);
+      await startWorkout();
+      navigation.navigate("LogToday" as never);
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const iconFor = (name: string, focused: boolean) => {
+    const color = focused ? theme.colors.primary : "rgba(0,0,0,0.35)";
+    const size = 22;
+    switch (name) {
+      case "Home":
+        return <Feather name="calendar" size={size} color={color} />;
+      case "User":
+        return <FontAwesome5 name="user" size={size} color={color} />;
+      case "Settings":
+        return <Feather name="settings" size={size} color={color} />;
+      default:
+        return <Ionicons name="ellipse" size={size} color={color} />;
+    }
+  };
 
   return (
-    <View style={styles.tabArea}>
-      <TouchableOpacity style={styles.tabItem} onPress={() => go("Home")}>
-        <Fontisto
-          name="player-settings"
-          style={{
-            opacity: state.index === 0 ? 1 : 0.3,
-            color: themas.colors.primary,
-            fontSize: 32,
-          }}
-        />
-      </TouchableOpacity>
+    <View style={[styles.wrap, { paddingBottom: Math.max(insets.bottom, 8) }]}>
+      <View style={styles.tabArea}>
+        {state.routes.map((route, i) => {
+          const focused = state.index === i;
+          return (
+            <TouchableOpacity
+              key={route.key}
+              style={styles.tabItem}
+              onPress={() => onPressTab(route.name)}
+              accessibilityRole="button"
+              accessibilityState={focused ? { selected: true } : {}}
+              accessibilityLabel={route.name}
+            >
+              {iconFor(route.name, focused)}
+              <Text style={[styles.tabLabel, focused && styles.tabLabelFocus]}>
+                {route.name}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
 
-      <TouchableOpacity style={styles.tabItemButtom} onPress={onOpen}>
-        <View style={{ width: "100%", left: 10, top: 4 }}>
-          <Ionicons name="add" size={35} color="#FFF" />
-        </View>
-        <View
-          style={{
-            flexDirection: "row-reverse",
-            width: "100%",
-            right: 10,
-            bottom: 10,
-          }}
-        >
-          <MaterialIcons name="edit-note" size={30} color="#FFF" />
-        </View>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.tabItem} onPress={() => go("Settings")}>
-        <FontAwesome
-          name="user"
-          style={{
-            opacity: state.index === 1 ? 1 : 0.3,
-            color: themas.colors.primary,
-            fontSize: 32,
-          }}
-        />
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={onStartWorkout}
+        disabled={creating}
+        accessibilityRole="button"
+        accessibilityLabel="Start workout"
+      >
+        {creating ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <>
+            <Ionicons name="add" size={28} color="#fff" />
+            <MaterialIcons
+              name="edit-note"
+              size={24}
+              color="#fff"
+              style={{ marginLeft: 4, marginTop: 2 }}
+            />
+          </>
+        )}
       </TouchableOpacity>
     </View>
   );
