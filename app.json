@@ -14,7 +14,10 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.gymlog"
+      "bundleIdentifier": "com.anonymous.gymlog",
+      "infoPlist": {
+        "NSUserNotificationUsageDescription": "We send a notification when your rest is over."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -25,9 +28,6 @@
       "package": "com.anonymous.gymlog"
     },
     "web": { "favicon": "./assets/favicon.png" },
-    "plugins": [
-      "expo-secure-store",
-      "expo-notifications"
-    ]
+    "plugins": ["expo-secure-store", "expo-notifications"]
   }
 }

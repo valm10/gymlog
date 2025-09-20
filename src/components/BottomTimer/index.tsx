@@ -1,4 +1,3 @@
-// File: src/components/BottomTimer/index.tsx
 import React, { useEffect, useRef, useState } from "react";
 import {
   View,
@@ -8,78 +7,42 @@ import {
   Keyboard,
   BackHandler,
   Platform,
+  InputAccessoryView,
 } from "react-native";
 import { styles } from "./style";
 import {
   ensureNotificationSetup,
   scheduleRestIn,
-  cancelNotification,
+  cancelAllScheduled,
 } from "../../lib/notifications";
 
-const STORAGE_KEY = "rest-timer@v1";
-
-type Persisted = {
-  stopAt: number;
-  running: boolean;
-  startedAt: number | null; // epoch ms when timer was (last) started
-};
+const ACCESSORY_ID = "rest-timer-accessory";
 
 export default function BottomTimer() {
-  const [sec, setSec] = useState(0);
+  const [elapsed, setElapsed] = useState(0);
   const [running, setRunning] = useState(false);
-  const [stopAtText, setStopAtText] = useState<string>("90");
+  const [stopAtText, setStopAtText] = useState("90");
   const [inputFocused, setInputFocused] = useState(false);
 
   const inputRef = useRef<TextInput>(null);
-  const notifIdRef = useRef<string | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startedAtRef = useRef<number | null>(null);
 
-  // ----- bootstrap: notifications + persisted state
   useEffect(() => {
     ensureNotificationSetup();
-
-    (async () => {
-      try {
-        const raw = await AsyncStorage.getItem(STORAGE_KEY);
-        if (!raw) return;
-        const saved: Persisted = JSON.parse(raw);
-        if (Number.isFinite(saved.stopAt)) setStopAtText(String(saved.stopAt));
-        if (saved.startedAt) {
-          startedAtRef.current = saved.startedAt;
-          const elapsed = Math.max(
-            0,
-            Math.floor((Date.now() - saved.startedAt) / 1000)
-          );
-          setSec(elapsed);
-        }
-        if (saved.running) {
-          setRunning(true);
-          const stopAt = Number.isFinite(saved.stopAt) ? saved.stopAt : 0;
-          const remaining = Math.max(
-            1,
-            stopAt -
-              Math.floor((Date.now() - (saved.startedAt ?? Date.now())) / 1000)
-          );
-          notifIdRef.current = (await scheduleRestIn(remaining)) as any;
-        }
-      } catch {}
-    })();
   }, []);
 
-  // ----- tick
+  // tick
   useEffect(() => {
     if (running) {
-      if (!startedAtRef.current) {
-        startedAtRef.current = Date.now() - sec * 1000;
-      }
+      if (!startedAtRef.current)
+        startedAtRef.current = Date.now() - elapsed * 1000;
       intervalRef.current = setInterval(() => {
-        setSec(
-          Math.max(
-            0,
-            Math.floor((Date.now() - (startedAtRef.current as number)) / 1000)
-          )
+        const e = Math.max(
+          0,
+          Math.floor((Date.now() - (startedAtRef.current as number)) / 1000)
         );
+        setElapsed(e);
       }, 1000);
     }
     return () => {
@@ -88,16 +51,16 @@ export default function BottomTimer() {
     };
   }, [running]);
 
-  // ----- auto-stop at target
+  // auto stop when reaching target (notif was scheduled at start)
   useEffect(() => {
-    const target = toPositiveInt(stopAtText);
+    const target = toInt(stopAtText);
     if (!running || target <= 0) return;
-    if (sec >= target) {
+    if (elapsed >= target) {
       stopTimer();
     }
-  }, [sec, running, stopAtText]);
+  }, [elapsed, running, stopAtText]);
 
-  // ----- Android back should blur input instead of trapping you
+  // Android back should blur input
   useEffect(() => {
     if (Platform.OS !== "android") return;
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
@@ -110,66 +73,51 @@ export default function BottomTimer() {
     return () => sub.remove();
   }, [inputFocused]);
 
-  // ----- persistence
-  useEffect(() => {
-    persistState().catch(() => {});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [running, stopAtText]);
+  const mm = String(Math.floor(elapsed / 60)).padStart(2, "0");
+  const ss = String(elapsed % 60).padStart(2, "0");
 
-  async function persistState() {
-    const stopAt = toPositiveInt(stopAtText);
-    const payload: Persisted = {
-      stopAt,
-      running,
-      startedAt: running ? startedAtRef.current : null,
-    };
-    try {
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-    } catch {}
-  }
-
-  function toPositiveInt(v: string) {
+  function toInt(v: string) {
     const n = Number(v);
     return Number.isFinite(n) && n > 0 ? Math.floor(n) : 0;
   }
 
-  async function startTimer() {
-    const target = toPositiveInt(stopAtText);
-    if (!running) {
-      startedAtRef.current = Date.now() - sec * 1000;
-      // schedule only if target is valid and in the future
-      if (target > sec) {
-        await cancelNotification(notifIdRef.current);
-        const remaining = Math.max(1, target - sec);
-        notifIdRef.current = (await scheduleRestIn(remaining)) as any;
-      } else {
-        await cancelNotification(notifIdRef.current);
-        notifIdRef.current = null;
-      }
-      setRunning(true);
+  async function applyStopAt() {
+    const n = toInt(stopAtText);
+    if (n <= 0) setStopAtText("90");
+    if (running) {
+      await cancelAllScheduled(); // why: avoid duplicate/instant notifs
+      const remaining = n - elapsed;
+      if (remaining >= 1) await scheduleRestIn(remaining);
     }
+    inputRef.current?.blur();
+    Keyboard.dismiss();
+  }
+
+  async function startTimer() {
+    if (running) return;
+    const target = toInt(stopAtText);
+    startedAtRef.current = Date.now() - elapsed * 1000;
+    await cancelAllScheduled(); // clear stale schedules
+    const remaining = target - elapsed;
+    if (remaining >= 1) await scheduleRestIn(remaining);
+    setRunning(true);
   }
 
   async function pauseTimer() {
-    if (running) {
-      setRunning(false);
-      await cancelNotification(notifIdRef.current);
-      notifIdRef.current = null;
-    }
+    if (!running) return;
+    setRunning(false);
+    await cancelAllScheduled();
   }
 
   async function stopTimer() {
     setRunning(false);
     startedAtRef.current = null;
-    await cancelNotification(notifIdRef.current);
-    notifIdRef.current = null;
-    // fire in-app banner for clarity (system notif already fires)
-    // no-op here; expo-notifications handler shows the scheduled notif
+    await cancelAllScheduled();
   }
 
   async function resetTimer() {
     await pauseTimer();
-    setSec(0);
+    setElapsed(0);
     startedAtRef.current = null;
   }
 
@@ -178,17 +126,14 @@ export default function BottomTimer() {
     else await startTimer();
   }
 
-  async function applyPreset(seconds: number) {
+  async function preset(seconds: number) {
     setStopAtText(String(seconds));
     if (running) {
-      await cancelNotification(notifIdRef.current);
-      const remaining = Math.max(1, seconds - sec);
-      notifIdRef.current = (await scheduleRestIn(remaining)) as any;
+      await cancelAllScheduled();
+      const remaining = seconds - elapsed;
+      if (remaining >= 1) await scheduleRestIn(remaining);
     }
   }
-
-  const mm = String(Math.floor(sec / 60)).padStart(2, "0");
-  const ss = String(sec % 60).padStart(2, "0");
 
   return (
     <View style={styles.container} pointerEvents="box-none">
@@ -203,26 +148,43 @@ export default function BottomTimer() {
           value={stopAtText}
           onChangeText={setStopAtText}
           onFocus={() => setInputFocused(true)}
-          onBlur={() => {
-            setInputFocused(false);
-            if (!toPositiveInt(stopAtText)) setStopAtText("90");
-          }}
+          onBlur={() => setInputFocused(false)}
           keyboardType="number-pad"
           returnKeyType="done"
           blurOnSubmit
-          onSubmitEditing={() => Keyboard.dismiss()}
+          onSubmitEditing={applyStopAt}
           placeholder="90"
           placeholderTextColor="rgba(255,255,255,0.6)"
           style={styles.input}
+          {...(Platform.OS === "ios"
+            ? { inputAccessoryViewID: ACCESSORY_ID }
+            : {})}
         />
-        <Pressable onPress={() => inputRef.current?.blur()}>
-          <Text style={{ color: "#fff" }}>Done</Text>
+        <Pressable onPress={applyStopAt} accessibilityLabel="Confirm seconds">
+          <Text style={{ color: "#fff" }}>OK</Text>
         </Pressable>
       </View>
 
+      {Platform.OS === "ios" && (
+        <InputAccessoryView nativeID={ACCESSORY_ID}>
+          <View
+            style={{
+              backgroundColor: "#1c1c1e",
+              paddingHorizontal: 12,
+              paddingVertical: 8,
+              alignItems: "flex-end",
+            }}
+          >
+            <Pressable onPress={applyStopAt}>
+              <Text style={{ color: "#FF6A00", fontWeight: "600" }}>OK</Text>
+            </Pressable>
+          </View>
+        </InputAccessoryView>
+      )}
+
       <View style={styles.pillRow}>
         {[60, 90, 120].map((p) => (
-          <Pressable key={p} onPress={() => applyPreset(p)} style={styles.pill}>
+          <Pressable key={p} onPress={() => preset(p)} style={styles.pill}>
             <Text style={styles.pillText}>{p}s</Text>
           </Pressable>
         ))}
@@ -239,6 +201,3 @@ export default function BottomTimer() {
     </View>
   );
 }
-
-// AsyncStorage import kept at bottom to avoid cycles in some bundlers
-import AsyncStorage from "@react-native-async-storage/async-storage";
