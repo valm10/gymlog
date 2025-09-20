@@ -24,9 +24,10 @@
       "edgeToEdgeEnabled": true,
       "package": "com.anonymous.gymlog"
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
-    "plugins": ["expo-secure-store"]
+    "web": { "favicon": "./assets/favicon.png" },
+    "plugins": [
+      "expo-secure-store",
+      "expo-notifications"
+    ]
   }
 }
