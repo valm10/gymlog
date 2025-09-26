@@ -62,7 +62,6 @@ export const Input = forwardRef(
           {IconRigth && iconRigthName && (
             <TouchableOpacity onPress={onIconRigthPress} style={styles.Button}>
               <IconRigth
-                // @ts-ignore RN icon types
                 name={iconRigthName}
                 size={20}
                 color={theme.colors.gray}

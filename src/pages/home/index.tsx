@@ -1,51 +1,73 @@
-import React from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { View, StyleSheet } from "react-native";
-import { Calendar } from "react-native-calendars";
+import React, { useEffect, useMemo, useState } from "react";
+import { View, StyleSheet, Alert } from "react-native";
+import { Calendar, DateObject } from "react-native-calendars";
+import { useNavigation } from "@react-navigation/native";
 import BottomTimer from "../../components/BottomTimer";
+import { listWorkoutDatesInRange } from "../../services/db";
+import theme from "../../global/themes";
+
+function monthRange(year: number, month: number) {
+  const first = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0));
+  const last = new Date(Date.UTC(year, month, 0, 23, 59, 59));
+  return { from: first.toISOString(), to: last.toISOString() };
+}
 
 export default function Home() {
+  const navigation = useNavigation();
   const today = new Date().toISOString().split("T")[0];
+
+  const [visible, setVisible] = useState<{ y: number; m: number }>(() => {
+    const d = new Date();
+    return { y: d.getFullYear(), m: d.getMonth() + 1 };
+  });
+  const [workoutDays, setWorkoutDays] = useState<string[]>([]);
+
+  async function loadMonth(y: number, m: number) {
+    try {
+      const { from, to } = monthRange(y, m);
+      const days = await listWorkoutDatesInRange(from, to);
+      setWorkoutDays(days);
+    } catch (e: any) {
+      Alert.alert("Error", e.message || String(e));
+    }
+  }
+
+  useEffect(() => {
+    loadMonth(visible.y, visible.m);
+  }, [visible.y, visible.m]);
+
+  const marked = useMemo(() => {
+    const m: Record<string, any> = {};
+    for (const d of workoutDays) {
+      m[d] = { selected: true, selectedColor: theme.colors.orangeLight };
+    }
+    // keep today visually selected if desired
+    if (!m[today]) {
+      m[today] = { selected: true, selectedColor: "#FFE6D1" };
+    }
+    return m;
+  }, [workoutDays]);
+
+  const onDayPress = (d: DateObject) => {
+    navigation.navigate(
+      "DayWorkouts" as never,
+      { date: d.dateString } as never
+    );
+  };
+
   return (
-    <SafeAreaView style={styles.safe} edges={["top", "left", "right"]}>
-      <View style={styles.container}>
-        <View style={styles.card}>
-          <Calendar
-            markedDates={{
-              [today]: { selected: true, selectedColor: "#FF6A00" },
-            }}
-            theme={{
-              todayTextColor: "#FF6A00",
-              selectedDayBackgroundColor: "#FF6A00",
-              arrowColor: "#111",
-              monthTextColor: "#111",
-              textSectionTitleColor: "rgba(0,0,0,0.6)",
-            }}
-          />
-        </View>
-        <View style={{ height: 120 }} />
-      </View>
+    <View style={styles.container}>
+      <Calendar
+        markedDates={marked}
+        onDayPress={onDayPress}
+        onMonthChange={(m) => setVisible({ y: m.year, m: m.month })}
+        enableSwipeMonths
+      />
       <BottomTimer />
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#f7f7f8" },
-  container: {
-    flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: 12,
-  },
-  card: {
-    borderRadius: 16,
-    backgroundColor: "#fff",
-    padding: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 3,
-    overflow: "hidden",
-  },
+  container: { flex: 1, backgroundColor: "#fff", paddingBottom: 100 },
 });

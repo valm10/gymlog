@@ -1,4 +1,3 @@
-// File: src/routes/index.routes.tsx
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -10,6 +9,7 @@ import Login from "../pages/login";
 import SignUp from "../pages/signup";
 import BottomRoutes from "./bottom.routes";
 import LogToday from "../pages/log";
+import DayWorkouts from "../pages/day";
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -46,7 +46,7 @@ export default function Routes() {
       {session ? (
         <>
           <Stack.Screen
-            name="Previous"
+            name="BottomRoutes"
             component={BottomRoutes}
             options={{ headerShown: false }}
           />
@@ -56,6 +56,14 @@ export default function Routes() {
             options={{
               headerShown: true,
               title: "Workout Log",
+            }}
+          />
+          <Stack.Screen
+            name="DayWorkouts"
+            component={DayWorkouts}
+            options={{
+              headerShown: true,
+              title: "Workouts",
             }}
           />
         </>

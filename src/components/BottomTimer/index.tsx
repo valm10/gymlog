@@ -51,7 +51,6 @@ export default function BottomTimer() {
     };
   }, [running]);
 
-  // auto stop when reaching target (notif was scheduled at start)
   useEffect(() => {
     const target = toInt(stopAtText);
     if (!running || target <= 0) return;
@@ -60,7 +59,6 @@ export default function BottomTimer() {
     }
   }, [elapsed, running, stopAtText]);
 
-  // Android back should blur input
   useEffect(() => {
     if (Platform.OS !== "android") return;
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
@@ -85,7 +83,7 @@ export default function BottomTimer() {
     const n = toInt(stopAtText);
     if (n <= 0) setStopAtText("90");
     if (running) {
-      await cancelAllScheduled(); // why: avoid duplicate/instant notifs
+      await cancelAllScheduled();
       const remaining = n - elapsed;
       if (remaining >= 1) await scheduleRestIn(remaining);
     }
@@ -97,7 +95,7 @@ export default function BottomTimer() {
     if (running) return;
     const target = toInt(stopAtText);
     startedAtRef.current = Date.now() - elapsed * 1000;
-    await cancelAllScheduled(); // clear stale schedules
+    await cancelAllScheduled();
     const remaining = target - elapsed;
     if (remaining >= 1) await scheduleRestIn(remaining);
     setRunning(true);

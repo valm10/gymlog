@@ -1,82 +1,45 @@
 import { supabase } from "../lib/supabase";
 
-export async function ensureProfile() {
+function dayRange(dateStr: string) {
+  const d = new Date(dateStr + "T00:00:00");
+  const start = new Date(d.setHours(0, 0, 0, 0)).toISOString();
+  const end = new Date(d.setHours(23, 59, 59, 999)).toISOString();
+  return { start, end };
+}
+
+export async function listWorkoutsByDate(dateStr: string) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) throw new Error("not authenticated");
-  await supabase
-    .from("profiles")
-    .upsert({ id: user.id })
-    .select()
-    .maybeSingle();
-  return user;
-}
-
-export async function listExercises() {
-  const { data, error } = await supabase
-    .from("exercises")
-    .select("*")
-    .order("name");
-  if (error) throw error;
-  return data;
-}
-
-export async function startWorkout(notes?: string) {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("not authenticated");
+  const { start, end } = dayRange(dateStr);
   const { data, error } = await supabase
     .from("workouts")
-    .insert({ user_id: user.id, notes })
-    .select()
-    .single();
-  if (error) throw error;
-  return data;
-}
-
-export async function getTodayWorkout() {
-  const start = new Date(new Date().setHours(0, 0, 0, 0)).toISOString();
-  const end = new Date(new Date().setHours(23, 59, 59, 999)).toISOString();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("not authenticated");
-  const { data, error } = await supabase
-    .from("workouts")
-    .select("*")
+    .select("id, started_at, notes")
     .gte("started_at", start)
     .lte("started_at", end)
     .eq("user_id", user.id)
-    .order("started_at", { ascending: false })
-    .limit(1);
-  if (error) throw error;
-  return data?.[0] ?? null;
-}
-
-export async function addSet(
-  workout_id: string,
-  exercise_id: string,
-  set_number: number,
-  reps: number,
-  weight_kg?: number
-) {
-  const { data, error } = await supabase
-    .from("sets")
-    .insert({ workout_id, exercise_id, set_number, reps, weight_kg })
-    .select()
-    .single();
+    .order("started_at", { ascending: true });
   if (error) throw error;
   return data;
 }
 
-export async function listSets(workout_id: string) {
+export async function listWorkoutDatesInRange(fromISO: string, toISO: string) {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("not authenticated");
   const { data, error } = await supabase
-    .from("sets")
-    .select("*, exercises:exercise_id(name)")
-    .eq("workout_id", workout_id)
-    .order("set_number");
+    .from("workouts")
+    .select("started_at")
+    .gte("started_at", fromISO)
+    .lte("started_at", toISO)
+    .eq("user_id", user.id);
   if (error) throw error;
-  return data;
+  const set = new Set<string>();
+  for (const w of data) {
+    const ds = new Date(w.started_at).toISOString().slice(0, 10);
+    set.add(ds);
+  }
+  return Array.from(set);
 }
