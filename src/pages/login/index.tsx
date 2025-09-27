@@ -32,7 +32,6 @@ export default function Login() {
         Alert.alert("Login failed", error.message);
         return;
       }
-      // let Routes handle stack switch via auth listener
     } catch {
       Alert.alert("Error", "Unexpected error, try again.");
     } finally {
@@ -72,7 +71,7 @@ export default function Login() {
         <Button text="Log in" loading={loading} onPress={getLogin} />
       </View>
 
-      <View style={{ flexDirection: "row" }}>
+      <View style={{ flexDirection: "row", marginBottom: 16 }}>
         <Text style={style.textBottom}>Don’t have an account? </Text>
         <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
           <Text style={style.textBottomCreate}>Sign up here</Text>

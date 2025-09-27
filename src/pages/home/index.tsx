@@ -1,19 +1,23 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { View, StyleSheet, Alert } from "react-native";
-import { Calendar, DateObject } from "react-native-calendars";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Calendar, DateData } from "react-native-calendars";
 import { useNavigation } from "@react-navigation/native";
+import type { StackNavigationProp } from "@react-navigation/stack";
+import type { RootStackParamList } from "../../routes/types";
 import BottomTimer from "../../components/BottomTimer";
 import { listWorkoutDatesInRange } from "../../services/db";
 import theme from "../../global/themes";
 
+// Month window in UTC, returns ISO bounds
 function monthRange(year: number, month: number) {
   const first = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0));
-  const last = new Date(Date.UTC(year, month, 0, 23, 59, 59));
+  const last = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));
   return { from: first.toISOString(), to: last.toISOString() };
 }
 
 export default function Home() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const today = new Date().toISOString().split("T")[0];
 
   const [visible, setVisible] = useState<{ y: number; m: number }>(() => {
@@ -41,33 +45,61 @@ export default function Home() {
     for (const d of workoutDays) {
       m[d] = { selected: true, selectedColor: theme.colors.orangeLight };
     }
-    // keep today visually selected if desired
     if (!m[today]) {
       m[today] = { selected: true, selectedColor: "#FFE6D1" };
     }
     return m;
-  }, [workoutDays]);
+  }, [workoutDays, today]);
 
-  const onDayPress = (d: DateObject) => {
-    navigation.navigate(
-      "DayWorkouts" as never,
-      { date: d.dateString } as never
-    );
+  const onDayPress = (d: DateData) => {
+    navigation.navigate("DayWorkouts", { date: d.dateString });
   };
 
   return (
-    <View style={styles.container}>
-      <Calendar
-        markedDates={marked}
-        onDayPress={onDayPress}
-        onMonthChange={(m) => setVisible({ y: m.year, m: m.month })}
-        enableSwipeMonths
-      />
+    <SafeAreaView style={styles.safe} edges={["top", "left", "right"]}>
+      <View style={styles.container}>
+        <View style={styles.calendarCard}>
+          <Calendar
+            markedDates={marked}
+            onDayPress={onDayPress}
+            onMonthChange={(m: DateData) =>
+              setVisible({ y: m.year, m: m.month })
+            }
+            enableSwipeMonths
+            theme={{
+              calendarBackground: "#fff",
+              textSectionTitleColor: "rgba(0,0,0,0.5)",
+              dayTextColor: "#111",
+              monthTextColor: "#111",
+              todayTextColor: theme.colors.primary,
+              arrowColor: "#111",
+            }}
+            style={{ borderRadius: 16 }}
+          />
+        </View>
+      </View>
+
       <BottomTimer />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff", paddingBottom: 100 },
+  safe: { flex: 1, backgroundColor: "#fff" },
+  container: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 100,
+    backgroundColor: "#fff",
+  },
+  calendarCard: {
+    borderRadius: 16,
+    backgroundColor: "#fff",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    elevation: 2,
+  },
 });

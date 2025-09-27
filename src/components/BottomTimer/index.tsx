@@ -7,7 +7,6 @@ import {
   Keyboard,
   BackHandler,
   Platform,
-  InputAccessoryView,
 } from "react-native";
 import { styles } from "./style";
 import {
@@ -15,8 +14,6 @@ import {
   scheduleRestIn,
   cancelAllScheduled,
 } from "../../lib/notifications";
-
-const ACCESSORY_ID = "rest-timer-accessory";
 
 export default function BottomTimer() {
   const [elapsed, setElapsed] = useState(0);
@@ -80,6 +77,7 @@ export default function BottomTimer() {
   }
 
   async function applyStopAt() {
+    // Why: apply on blur/submit/preset; no extra “OK” UI.
     const n = toInt(stopAtText);
     if (n <= 0) setStopAtText("90");
     if (running) {
@@ -146,7 +144,11 @@ export default function BottomTimer() {
           value={stopAtText}
           onChangeText={setStopAtText}
           onFocus={() => setInputFocused(true)}
-          onBlur={() => setInputFocused(false)}
+          onBlur={() => {
+            setInputFocused(false);
+            void applyStopAt();
+          }}
+          onEndEditing={applyStopAt}
           keyboardType="number-pad"
           returnKeyType="done"
           blurOnSubmit
@@ -154,31 +156,11 @@ export default function BottomTimer() {
           placeholder="90"
           placeholderTextColor="rgba(255,255,255,0.6)"
           style={styles.input}
-          {...(Platform.OS === "ios"
-            ? { inputAccessoryViewID: ACCESSORY_ID }
-            : {})}
         />
-        <Pressable onPress={applyStopAt} accessibilityLabel="Confirm seconds">
-          <Text style={{ color: "#fff" }}>OK</Text>
-        </Pressable>
+        {/* Removed unused OK button */}
       </View>
 
-      {Platform.OS === "ios" && (
-        <InputAccessoryView nativeID={ACCESSORY_ID}>
-          <View
-            style={{
-              backgroundColor: "#1c1c1e",
-              paddingHorizontal: 12,
-              paddingVertical: 8,
-              alignItems: "flex-end",
-            }}
-          >
-            <Pressable onPress={applyStopAt}>
-              <Text style={{ color: "#FF6A00", fontWeight: "600" }}>OK</Text>
-            </Pressable>
-          </View>
-        </InputAccessoryView>
-      )}
+      {/* Removed iOS InputAccessoryView “OK” */}
 
       <View style={styles.pillRow}>
         {[60, 90, 120].map((p) => (

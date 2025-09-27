@@ -6,17 +6,21 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
+  TouchableOpacity,
 } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MaterialIcons, AntDesign } from "@expo/vector-icons";
 import Logo from "../../assets/logo.png";
 import { style } from "../login/style";
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import { supabase } from "../../lib/supabase";
-import { useNavigation } from "@react-navigation/native";
 
 export default function SignUp() {
   const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -51,6 +55,24 @@ export default function SignUp() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <View style={style.container}>
+        {/* Back button */}
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+          style={{
+            position: "absolute",
+            left: 16,
+            top: insets.top + 8,
+            zIndex: 10,
+            padding: 8,
+            borderRadius: 20,
+            backgroundColor: "rgba(0,0,0,0.05)", // subtle touch target
+          }}
+        >
+          <AntDesign name="arrowleft" size={20} color="#111" />
+        </TouchableOpacity>
+
         <View style={style.boxTop}>
           <Image source={Logo} style={style.logo} resizeMode="contain" />
           <Text style={style.text}>Create Account</Text>
@@ -84,7 +106,7 @@ export default function SignUp() {
           />
         </View>
 
-        <View style={{ padding: 20, width: "100%" }}>
+        <View style={style.boxBottom}>
           <Button text="Sign up" loading={loading} onPress={handleSignUp} />
         </View>
       </View>

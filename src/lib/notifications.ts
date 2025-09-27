@@ -1,5 +1,8 @@
+// PATH: src/lib/notifications.ts
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
+
+const CHANNEL_ID = "default";
 
 Notifications.setNotificationHandler({
   handleNotification:
@@ -12,31 +15,52 @@ Notifications.setNotificationHandler({
     }),
 });
 
-export async function ensureNotificationSetup() {
-  const { status } = await Notifications.getPermissionsAsync();
-  if (status !== "granted") await Notifications.requestPermissionsAsync();
+/** Ensure permissions + Android channel. Returns true if we can notify. */
+export async function ensureNotificationSetup(): Promise<boolean> {
+  let perm = await Notifications.getPermissionsAsync();
+  if (perm.status !== "granted") {
+    perm = await Notifications.requestPermissionsAsync();
+  }
+
   if (Platform.OS === "android") {
-    await Notifications.setNotificationChannelAsync("default", {
-      name: "default",
+    await Notifications.setNotificationChannelAsync(CHANNEL_ID, {
+      name: "Default",
       importance: Notifications.AndroidImportance.DEFAULT,
       vibrationPattern: [0, 250, 250, 250],
       lightColor: "#FF6A00",
     });
   }
+
+  const iosOk =
+    Platform.OS === "ios" &&
+    perm.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL;
+
+  return perm.status === "granted" || iosOk;
 }
 
+/** Schedule “rest over” in N seconds using a typed time-interval trigger. */
 export async function scheduleRestIn(seconds: number) {
   const s = Math.floor(seconds);
   if (!Number.isFinite(s) || s < 1) return null;
-  const when = new Date(Date.now() + s * 1000);
+
+  const trigger: Notifications.NotificationTriggerInput = {
+    type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+    seconds: s,
+    // repeats: false, // default false
+    ...(Platform.OS === "android" ? { channelId: CHANNEL_ID } : null),
+  };
+
   return Notifications.scheduleNotificationAsync({
     content: { title: "Rest is over", body: "Time to lift." },
-    trigger: when,
+    trigger,
   });
 }
 
+/** Cancel all scheduled notifications (best-effort). */
 export async function cancelAllScheduled() {
   try {
     await Notifications.cancelAllScheduledNotificationsAsync();
-  } catch {}
+  } catch {
+    // ignore
+  }
 }

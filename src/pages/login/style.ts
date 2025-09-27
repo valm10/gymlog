@@ -1,7 +1,13 @@
+// PATH: src/pages/login/style.ts
 import { Dimensions, StyleSheet } from "react-native";
 import theme from "../../global/themes";
+
 export const style = StyleSheet.create({
-  container: { flex: 1, alignItems: "center", justifyContent: "center" },
+  container: {
+    flex: 1,
+    alignItems: "center",
+    backgroundColor: "#f7f7f8",
+  },
   boxTop: {
     width: "100%",
     height: Dimensions.get("window").height / 3,
@@ -17,7 +23,8 @@ export const style = StyleSheet.create({
   boxBottom: {
     width: "100%",
     paddingHorizontal: 24,
-    marginTop: 24,
+    paddingBottom: 24, // nicer bottom spacing
+    marginTop: "auto", // why: push button area to the bottom
   },
   logo: { width: 80, height: 80, borderRadius: 5 },
   text: { fontWeight: "bold", marginTop: 40, fontSize: 18 },

@@ -48,7 +48,10 @@ export default function Routes() {
           <Stack.Screen
             name="BottomRoutes"
             component={BottomRoutes}
-            options={{ headerShown: false }}
+            options={{
+              headerShown: false,
+              title: "Home",
+            }}
           />
           <Stack.Screen
             name="LogToday"

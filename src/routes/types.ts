@@ -5,3 +5,8 @@ export type RootStackParamList = {
   LogToday: undefined;
   DayWorkouts: { date: string };
 };
+
+export type RootTabParamList = {
+  Home: undefined;
+  Settings: undefined;
+};

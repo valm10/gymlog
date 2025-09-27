@@ -10,6 +10,7 @@ const Tab = createBottomTabNavigator<RootTabParamList>();
 export default function BottomRoutes() {
   return (
     <Tab.Navigator
+      detachInactiveScreens={true}
       screenOptions={{ headerShown: false }}
       tabBar={(p) => <CustomTabBar {...p} />}
     >
