@@ -15,7 +15,6 @@ Notifications.setNotificationHandler({
     }),
 });
 
-/** Ensure permissions + Android channel. Returns true if we can notify. */
 export async function ensureNotificationSetup(): Promise<boolean> {
   let perm = await Notifications.getPermissionsAsync();
   if (perm.status !== "granted") {
@@ -38,7 +37,6 @@ export async function ensureNotificationSetup(): Promise<boolean> {
   return perm.status === "granted" || iosOk;
 }
 
-/** Schedule “rest over” in N seconds using a typed time-interval trigger. */
 export async function scheduleRestIn(seconds: number) {
   const s = Math.floor(seconds);
   if (!Number.isFinite(s) || s < 1) return null;
@@ -46,7 +44,6 @@ export async function scheduleRestIn(seconds: number) {
   const trigger: Notifications.NotificationTriggerInput = {
     type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
     seconds: s,
-    // repeats: false, // default false
     ...(Platform.OS === "android" ? { channelId: CHANNEL_ID } : null),
   };
 
@@ -56,11 +53,8 @@ export async function scheduleRestIn(seconds: number) {
   });
 }
 
-/** Cancel all scheduled notifications (best-effort). */
 export async function cancelAllScheduled() {
   try {
     await Notifications.cancelAllScheduledNotificationsAsync();
-  } catch {
-    // ignore
-  }
+  } catch {}
 }

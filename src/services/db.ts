@@ -8,20 +8,17 @@ function dayRange(dateStr: string) {
   return { start, end };
 }
 
-/* =============================== Types =============================== */
 export type Exercise = {
   id: string;
   name: string;
   muscle_group?: string | null;
 };
-
 export type Workout = {
   id: string;
   user_id: string;
-  started_at: string; // ISO
+  started_at: string;
   notes: string | null;
 };
-
 export type SetRow = {
   id: string;
   workout_id: string;
@@ -30,9 +27,8 @@ export type SetRow = {
   reps: number | null;
   weight_kg: number | null;
   created_at: string | null;
-  exercises?: { name: string } | null; // normalized single object (or null)
+  exercises?: { name: string } | null;
 };
-
 export type ExerciseSummaryForDate = {
   exercise_id: string;
   name: string;
@@ -41,7 +37,6 @@ export type ExerciseSummaryForDate = {
   lastWeight: number | null;
 };
 
-/* ============================ Auth helper ============================ */
 async function requireUser() {
   const { data, error } = await supabase.auth.getUser();
   if (error) throw error;
@@ -50,7 +45,7 @@ async function requireUser() {
   return user;
 }
 
-/* ============================== Catalog ============================== */
+/* Catalog */
 export async function listExercises(): Promise<Exercise[]> {
   await requireUser();
   const { data, error } = await supabase
@@ -61,7 +56,7 @@ export async function listExercises(): Promise<Exercise[]> {
   return data as Exercise[];
 }
 
-/* ============================== Workouts ============================= */
+/* Workouts */
 export async function getTodayWorkout(): Promise<Workout | null> {
   const user = await requireUser();
   const today = new Date().toISOString().slice(0, 10);
@@ -75,7 +70,6 @@ export async function getTodayWorkout(): Promise<Workout | null> {
     .order("started_at", { ascending: true })
     .limit(1)
     .maybeSingle();
-  // Why: Supabase returns PGRST116 on "no rows"; we normalize to null.
   if (error && (error as any).code !== "PGRST116") throw error;
   return (data as Workout) ?? null;
 }
@@ -125,12 +119,10 @@ export async function listWorkoutDatesInRange(fromISO: string, toISO: string) {
   return Array.from(set);
 }
 
-/* ========================= Sets + Normalization ======================= */
-// Supabase join can return `exercises` as array or object; normalize it.
+/* Sets (+ normalize joined shape) */
 type RawSetRow = Omit<SetRow, "exercises"> & {
   exercises?: { name: string } | { name: string }[] | null;
 };
-
 function normalizeSetRow(r: RawSetRow): SetRow {
   const ex = Array.isArray(r.exercises)
     ? (r.exercises[0] ?? null)
@@ -182,7 +174,13 @@ export async function addSet(
   return normalizeSetRow(data as RawSetRow);
 }
 
-/* ======================= Day exercise aggregation ===================== */
+export async function deleteSet(setId: string): Promise<void> {
+  await requireUser();
+  const { error } = await supabase.from("sets").delete().eq("id", setId);
+  if (error) throw error;
+}
+
+/* Day aggregation */
 export async function listExercisesDoneOnDate(
   dateStr: string
 ): Promise<ExerciseSummaryForDate[]> {
@@ -226,7 +224,6 @@ export async function listExercisesDoneOnDate(
       });
     } else {
       prev.sets += 1;
-      // ascending created_at → last values are the newest seen so far
       prev.lastReps = reps ?? prev.lastReps;
       prev.lastWeight = weight ?? prev.lastWeight;
     }

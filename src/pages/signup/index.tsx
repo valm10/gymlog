@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { MaterialIcons, AntDesign } from "@expo/vector-icons";
+import { MaterialIcons, AntDesign, Feather } from "@expo/vector-icons";
 import Logo from "../../assets/logo.png";
 import { style } from "../login/style";
 import { Input } from "../../components/Input";
@@ -28,10 +28,12 @@ export default function SignUp() {
 
   async function handleSignUp() {
     if (!email || !password || !confirmPassword) {
-      return Alert.alert("Missing info", "Please fill all fields.");
+      Alert.alert("Missing info", "Please fill all fields.");
+      return;
     }
     if (password !== confirmPassword) {
-      return Alert.alert("Error", "Passwords do not match.");
+      Alert.alert("Error", "Passwords do not match.");
+      return;
     }
     try {
       setLoading(true);
@@ -67,10 +69,10 @@ export default function SignUp() {
             zIndex: 10,
             padding: 8,
             borderRadius: 20,
-            backgroundColor: "rgba(0,0,0,0.05)", // subtle touch target
+            backgroundColor: "rgba(0,0,0,0.05)",
           }}
         >
-          <AntDesign name="arrowleft" size={20} color="#111" />
+          <Feather name="chevron-left" size={22} color="#111" />
         </TouchableOpacity>
 
         <View style={style.boxTop}>

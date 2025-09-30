@@ -23,8 +23,8 @@ export const style = StyleSheet.create({
   boxBottom: {
     width: "100%",
     paddingHorizontal: 24,
-    paddingBottom: 24, // nicer bottom spacing
-    marginTop: "auto", // why: push button area to the bottom
+    paddingBottom: 24,
+    marginTop: "auto",
   },
   logo: { width: 80, height: 80, borderRadius: 5 },
   text: { fontWeight: "bold", marginTop: 40, fontSize: 18 },

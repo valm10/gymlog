@@ -1,11 +1,12 @@
+// PATH: src/lib/supabase.ts
 import "react-native-url-polyfill/auto";
 import "react-native-get-random-values";
 import { createClient } from "@supabase/supabase-js";
 import * as SecureStore from "expo-secure-store";
+import { Platform } from "react-native";
 
 const url = process.env.EXPO_PUBLIC_SUPABASE_URL?.trim();
 const anon = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY?.trim();
-
 function assertEnv() {
   if (!url || !anon) {
     throw new Error(
@@ -19,9 +20,47 @@ function assertEnv() {
 assertEnv();
 
 const ExpoSecureStoreAdapter = {
-  getItem: (key: string) => SecureStore.getItemAsync(key),
-  setItem: (key: string, value: string) => SecureStore.setItemAsync(key, value),
-  removeItem: (key: string) => SecureStore.deleteItemAsync(key),
+  async getItem(key: string) {
+    try {
+      return await SecureStore.getItemAsync(key);
+    } catch (e) {
+      if (__DEV__) {
+        console.warn(
+          "[SecureStore.getItemAsync] ignored:",
+          (e as Error)?.message
+        );
+      }
+      return null;
+    }
+  },
+  async setItem(key: string, value: string) {
+    try {
+      await SecureStore.setItemAsync(
+        key,
+        value,
+        Platform.OS === "ios"
+          ? { keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK }
+          : undefined
+      );
+    } catch (e) {
+      if (__DEV__)
+        console.warn(
+          "[SecureStore.setItemAsync] ignored:",
+          (e as Error)?.message
+        );
+    }
+  },
+  async removeItem(key: string) {
+    try {
+      await SecureStore.deleteItemAsync(key);
+    } catch (e) {
+      if (__DEV__)
+        console.warn(
+          "[SecureStore.deleteItemAsync] ignored:",
+          (e as Error)?.message
+        );
+    }
+  },
 };
 
 export const supabase = createClient(url!, anon!, {
@@ -34,7 +73,6 @@ export const supabase = createClient(url!, anon!, {
   global: {
     headers: { "X-Client-Info": "gymlog-rn" },
     fetch: (input, init) => {
-      // add a 10s timeout to fail fast on network/DNS issues
       const controller = new AbortController();
       const id = setTimeout(() => controller.abort(), 10000);
       return fetch(input as any, {

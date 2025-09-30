@@ -29,7 +29,6 @@ export default function BottomTimer() {
     ensureNotificationSetup();
   }, []);
 
-  // tick
   useEffect(() => {
     if (running) {
       if (!startedAtRef.current)
@@ -77,7 +76,6 @@ export default function BottomTimer() {
   }
 
   async function applyStopAt() {
-    // Why: apply on blur/submit/preset; no extra “OK” UI.
     const n = toInt(stopAtText);
     if (n <= 0) setStopAtText("90");
     if (running) {
@@ -132,13 +130,18 @@ export default function BottomTimer() {
   }
 
   return (
-    <View style={styles.container} pointerEvents="box-none">
+    <View
+      style={styles.container}
+      pointerEvents="box-none"
+      accessible
+      accessibilityLabel="Rest timer"
+    >
       <Text style={styles.time}>
         {mm}:{ss}
       </Text>
 
       <View style={styles.inputWrap}>
-        <Text style={{ color: "#fff" }}>Stop at (sec)</Text>
+        <Text style={{ color: "#fff" }}>Rest duration (sec)</Text>
         <TextInput
           ref={inputRef}
           value={stopAtText}
@@ -146,9 +149,8 @@ export default function BottomTimer() {
           onFocus={() => setInputFocused(true)}
           onBlur={() => {
             setInputFocused(false);
-            void applyStopAt();
+            applyStopAt();
           }}
-          onEndEditing={applyStopAt}
           keyboardType="number-pad"
           returnKeyType="done"
           blurOnSubmit
@@ -156,25 +158,37 @@ export default function BottomTimer() {
           placeholder="90"
           placeholderTextColor="rgba(255,255,255,0.6)"
           style={styles.input}
+          accessibilityLabel="Rest duration in seconds"
         />
-        {/* Removed unused OK button */}
       </View>
-
-      {/* Removed iOS InputAccessoryView “OK” */}
 
       <View style={styles.pillRow}>
         {[60, 90, 120].map((p) => (
-          <Pressable key={p} onPress={() => preset(p)} style={styles.pill}>
+          <Pressable
+            key={p}
+            onPress={() => preset(p)}
+            style={styles.pill}
+            accessibilityRole="button"
+            accessibilityLabel={`${p} seconds preset`}
+          >
             <Text style={styles.pillText}>{p}s</Text>
           </Pressable>
         ))}
       </View>
 
       <View style={styles.row}>
-        <Pressable onPress={onToggle}>
+        <Pressable
+          onPress={onToggle}
+          accessibilityRole="button"
+          accessibilityLabel={running ? "Pause timer" : "Start timer"}
+        >
           <Text style={{ color: "#fff" }}>{running ? "Pause" : "Start"}</Text>
         </Pressable>
-        <Pressable onPress={resetTimer}>
+        <Pressable
+          onPress={resetTimer}
+          accessibilityRole="button"
+          accessibilityLabel="Reset timer"
+        >
           <Text style={{ color: "#fff" }}>Reset</Text>
         </Pressable>
       </View>

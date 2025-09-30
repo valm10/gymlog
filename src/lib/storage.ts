@@ -1,4 +1,3 @@
-// Minimal wrapper so the app won’t crash if the module is missing during dev.
 type StorageLike = {
   getItem(key: string): Promise<string | null>;
   setItem(key: string, value: string): Promise<void>;
@@ -8,7 +7,6 @@ type StorageLike = {
 let AsyncStorageSafe: StorageLike;
 
 try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   AsyncStorageSafe =
     require("@react-native-async-storage/async-storage").default;
 } catch {

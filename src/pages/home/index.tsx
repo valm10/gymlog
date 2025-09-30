@@ -9,7 +9,6 @@ import BottomTimer from "../../components/BottomTimer";
 import { listWorkoutDatesInRange } from "../../services/db";
 import theme from "../../global/themes";
 
-// Month window in UTC, returns ISO bounds
 function monthRange(year: number, month: number) {
   const first = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0));
   const last = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999));

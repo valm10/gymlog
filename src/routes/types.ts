@@ -4,6 +4,7 @@ export type RootStackParamList = {
   BottomRoutes: undefined;
   LogToday: undefined;
   DayWorkouts: { date: string };
+  Help: undefined;
 };
 
 export type RootTabParamList = {

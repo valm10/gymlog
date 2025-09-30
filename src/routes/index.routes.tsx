@@ -10,6 +10,7 @@ import SignUp from "../pages/signup";
 import BottomRoutes from "./bottom.routes";
 import LogToday from "../pages/log";
 import DayWorkouts from "../pages/day";
+import Help from "../pages/help";
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -23,13 +24,13 @@ export default function Routes() {
       if (mounted) setSession(data.session);
     });
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((_e, s) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((_e, s) => {
       if (mounted) setSession(s);
     });
 
     return () => {
       mounted = false;
-      authListener.subscription.unsubscribe();
+      listener?.subscription?.unsubscribe();
     };
   }, []);
 
@@ -48,10 +49,7 @@ export default function Routes() {
           <Stack.Screen
             name="BottomRoutes"
             component={BottomRoutes}
-            options={{
-              headerShown: false,
-              title: "Home",
-            }}
+            options={{ headerShown: false, title: "Home" }}
           />
           <Stack.Screen
             name="LogToday"
@@ -67,6 +65,14 @@ export default function Routes() {
             options={{
               headerShown: true,
               title: "Workouts",
+            }}
+          />
+          <Stack.Screen
+            name="Help"
+            component={Help}
+            options={{
+              headerShown: true,
+              title: "Help & Tips",
             }}
           />
         </>
