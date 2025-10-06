@@ -1,4 +1,3 @@
-// PATH: src/pages/login/style.ts
 import { Dimensions, StyleSheet } from "react-native";
 import theme from "../../global/themes";
 
