@@ -21,13 +21,9 @@ A simple, fast workout log for iOS/Android. Start a workout, add sets (reps × w
 ## Screenshots
 
 <p align="center">
-  <img src="src/assets/Screenshot-home.PNG" alt="Home screen" width="360" />
-</p>
-<p align="center">
-  <img src="src/assets/Screenshot-loginput.PNG" alt="Workout Log" width="360" />
-</p>
-<p align="center">
-  <img src="src/assets/Screenshot-settings.PNG" alt="Settings & Help" width="360" />
+  <img src="src/assets/Screenshot-home.PNG" alt="Home" width="280" />
+  <img src="src/assets/Screenshot-loginput.PNG" alt="Workout Log" width="280" />
+  <img src="src/assets/Screenshot-settings.PNG" alt="Settings & Help" width="280" />
 </p>
 
 ---
