@@ -1,35 +1,29 @@
-# Gym Log
+# GymLog (React Native + Supabase)
 
-A simple application where users are able to register and securely log in to their accounts to track daily workout sessions. Users can record detailed training data, such as exercises, duration, weigth and notes. The app also includes a customizable rest timer to help users manage breaks between sets and workouts.
+A simple, fast workout log for iOS/Android. Start a workout, add sets (reps × weight), and review your training on a calendar.
 
-## Tech Stack
+> Built with Expo, React Navigation, and Supabase. Focused on clarity, reliability, and small, deliberate code.
 
-**Client:** React Native (Expo) + TypeScript
+---
 
-**Server:** Supabase
+## Features
 
-## Run Locally
+- 🗓️ **Calendar view** — marks days you trained; tap any day to review that date.
+- ✍️ **Workout log** — choose an exercise, add sets (reps/weight). Groups by exercise.
+- 🔁 **Quick add** — duplicate last set for speed.
+- ⏱️ **Rest timer** — presets + local notifications.
+- 🗑️ **Edit safety** — long-press a set to delete (with confirmation).
+- 🔐 **Auth** — sign up / login with Supabase.
+- 📱 **Polished UI** — simple cards, consistent theme tokens.
 
-Clone the project
+---
 
-```bash
-  git clone https://github.com/valm10/gymlog.git
-```
+## Screenshots
 
-Go to the project directory
+> Add your own or replace these with real captures later.
 
-```bash
-  cd gymlog
-```
+- ![Home screen](/Users/vitorlopes/projects/gymlog/src/assets/Screenshot-home.PNG) 
+- ![Workout Log](/Users/vitorlopes/projects/gymlog/src/assets/Screenshot-loginput.PNG)
+- ![Settings & Help](/Users/vitorlopes/projects/gymlog/src/assets/Screenshot-settings.PNG)
 
-Install dependencies
-
-```bash
-  npm install
-```
-
-Start the server
-
-```bash
-  npm run start
-```
+---
