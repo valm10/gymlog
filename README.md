@@ -63,7 +63,3 @@ npm run web        # Web preview (limited)
 </p>
 
 ---
-
-```
-
-```
