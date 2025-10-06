@@ -22,8 +22,8 @@ A simple, fast workout log for iOS/Android. Start a workout, add sets (reps × w
 
 > Add your own or replace these with real captures later.
 
-- ![Home screen](/Users/vitorlopes/projects/gymlog/src/assets/Screenshot-home.PNG) 
-- ![Workout Log](/Users/vitorlopes/projects/gymlog/src/assets/Screenshot-loginput.PNG)
-- ![Settings & Help](/Users/vitorlopes/projects/gymlog/src/assets/Screenshot-settings.PNG)
+![Home screen](src/assets/Screenshot-home.png)
+![Workout Log](src/assets/Screenshot-loginput.png)
+![Settings & Help](src/assets/Screenshot-settings.png)
 
 ---
