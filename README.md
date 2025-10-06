@@ -30,17 +30,25 @@ A simple, fast workout log for iOS/Android. Start a workout, add sets (reps × w
 
 ## Environment
 
-- Create .env file
-  EXPO_PUBLIC_SUPABASE_URL=https://YOUR-PROJECT.supabase.co
-  EXPO_PUBLIC_SUPABASE_ANON_KEY=YOUR-ANON-KEY
+Create a `.env` file at the project root (Expo reads `EXPO_PUBLIC_*` at build time):
+
+````env
+EXPO_PUBLIC_SUPABASE_URL=https://YOUR-PROJECT.supabase.co
+EXPO_PUBLIC_SUPABASE_ANON_KEY=YOUR-ANON-KEY
 
 ---
 
-## QuickStart
+## Quickstart
 
-npm install
-cp .env.example .env # fill Supabase URL + anon key
-npm run start # or: npm run ios / npm run android
+**Prereqs:** Node 18+, npm, Expo Go (phone) or iOS/Android emulator.
+
+   ```bash
+   npm install
+   cp .env.example .env
+   npm run start      # QR code for Expo Go
+   npm run ios        # iOS simulator (macOS)
+   npm run android    # Android emulator/device
+   npm run web        # Web preview (limited)
 
 ---
 
@@ -53,3 +61,4 @@ npm run start # or: npm run ios / npm run android
 </p>
 
 ---
+````
