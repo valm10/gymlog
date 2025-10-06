@@ -27,3 +27,29 @@ A simple, fast workout log for iOS/Android. Start a workout, add sets (reps × w
 </p>
 
 ---
+
+## Environment
+
+- Create .env file
+  EXPO_PUBLIC_SUPABASE_URL=https://YOUR-PROJECT.supabase.co
+  EXPO_PUBLIC_SUPABASE_ANON_KEY=YOUR-ANON-KEY
+
+---
+
+## QuickStart
+
+npm install
+cp .env.example .env # fill Supabase URL + anon key
+npm run start # or: npm run ios / npm run android
+
+---
+
+## Contact
+
+<p align="center">
+  <a href="https://www.linkedin.com/in/vitor-lopes-medeiros">LinkedIn</a> •
+  <a href="mailto:vitorlopesmed@gmail.com">Email</a> •
+  <a href="https://github.com/valm10">GitHub</a>
+</p>
+
+---
